@@ -5,7 +5,7 @@ Automatically turns on a Yamaha Receiver (and switches it to the appropriate inp
 
 What this does:
 
-Start this as a daemon. It connects to your Sonos Connect and your Yamaha Receiver. Whenever the Sonos Connect starts playing music, radio or whatever, it turns on the Receiver, switches to the appropriate input, sets the volume and changes to the Sound Program you want to (e.g. "5ch Stereo").
+Start this as a daemon (sample init.d-script included). It connects to your Sonos Connect and your Yamaha Receiver. Whenever the Sonos Connect starts playing music, radio or whatever, it turns on the Receiver, switches to the appropriate input, sets the volume and changes to the Sound Program you want to (e.g. "5ch Stereo").
 
 If the Receiver is already turned on, it just switches the input and leaves the rest alone.
 
