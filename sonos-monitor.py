@@ -163,7 +163,7 @@ while True:
         status  = event.variables.get('transport_state')
 
         if not status:
-            print u"Invalid SONOS status: {}".format(event.variables).encode('utf-8')
+            print u"{} Invalid SONOS status: {}".format(datetime.now(), event.variables).encode('utf-8')
 
         if last_status != status:
             print u"{} SONOS play status: {}".format(datetime.now(), status).encode('utf-8')
