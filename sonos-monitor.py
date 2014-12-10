@@ -49,6 +49,9 @@ import Queue
 import signal
 from datetime import datetime
 
+__version__     = '0.2'
+
+
 
 # --- Please adapt these settings ---------------------------------------------
 
@@ -153,7 +156,7 @@ last_status     = None
 
 # catch SIGTERM gracefully
 signal.signal(signal.SIGTERM, handle_sigterm)
-# no bufferd STDOUT so we can use it for logging
+# non-buffered STDOUT so we can use it for logging
 auto_flush_stdout()
 
 while True:
