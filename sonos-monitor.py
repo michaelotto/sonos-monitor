@@ -139,7 +139,7 @@ if len(match_ips) != 1:
     sys.exit(1)
 
 sonos_device    = soco.SoCo(match_ips[0])
-sub             = sonos_device.avTransport.subscribe()
+sub             = sonos_device.avTransport.subscribe(requested_timeout=300, auto_renew=True)            # get auto-renewing, 5-minute subscriptions. Seems more stable than infinite subscriptions.
 
 # --- Initial Yamaha status ---------------------------------------------------
 
