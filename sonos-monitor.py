@@ -49,7 +49,7 @@ import Queue
 import signal
 from datetime import datetime
 
-__version__     = '0.2'
+__version__     = '0.3'
 
 
 
@@ -139,7 +139,8 @@ if len(match_ips) != 1:
     sys.exit(1)
 
 sonos_device    = soco.SoCo(match_ips[0])
-sub             = sonos_device.avTransport.subscribe(requested_timeout=300, auto_renew=True)            # get auto-renewing, 5-minute subscriptions. Seems more stable than infinite subscriptions.
+subscription    = None
+renewal_time    = 120
 
 # --- Initial Yamaha status ---------------------------------------------------
 
@@ -160,8 +161,34 @@ signal.signal(signal.SIGTERM, handle_sigterm)
 auto_flush_stdout()
 
 while True:
+    # if not subscribed to SONOS connect for any reason (first start or disconnect while monitoring), (re-)subscribe
+    if not subscription or not subscription.is_subscribed or subscription.time_left <= 5:
+        # The time_left should normally not fall below 0.85*renewal_time - or something is wrong (connection lost).
+        # Unfortunately, the soco module handles the renewal in a separate thread that just barfs  on renewal
+        # failure and doesn't set is_subscribed to False. So we check ourselves.
+        # After testing, this is so robust, it survives a reboot of the SONOS. At maximum, it needs 2 minutes
+        # (renewal_time) for recovery.
+
+        if subscription:
+            print u"{} *** Unsubscribing from SONOS device events".format(datetime.now()).encode('utf-8')
+            try:
+                subscription.unsubscribe()
+                soco.events.event_listener.stop()
+            except Exception as e:
+                print u"{} *** Unsubscribe failed: {}".format(datetime.now(), e).encode('utf-8')
+
+        print u"{} *** Subscribing to SONOS device events".format(datetime.now()).encode('utf-8')
+        try:
+            subscription = sonos_device.avTransport.subscribe(requested_timeout=renewal_time, auto_renew=True)
+        except Exception as e:
+            print u"{} *** Subscribe failed: {}".format(datetime.now(), e).encode('utf-8')
+            # subscription failed (e.g. sonos is disconnected for a longer period of time): wait 10 seconds
+            # and retry
+            time.sleep(10)
+            continue
+
     try:
-        event   = sub.events.get(timeout=10)
+        event   = subscription.events.get(timeout=10)
         status  = event.variables.get('transport_state')
 
         if not status:
@@ -186,6 +213,6 @@ while True:
         handle_sigterm()
 
     if break_loop:
-        sub.unsubscribe()
+        subscription.unsubscribe()
         soco.events.event_listener.stop()
         break
