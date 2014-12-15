@@ -8,8 +8,8 @@
 # it turns on the Receiver, switches to the appropriate input, sets the volume
 # and changes to the Sound Program you want to (e.g. "5ch Stereo").
 #
-# If the Receiver is already turned on, it just switches the input and leaves
-# the rest alone.
+# If the Receiver is already turned on, it just switches the input and the
+# Sound Program, not the Volume.
 #
 # If you set the standby time of the Receiver to 20 minutes, you'll have a
 # decent instant-on solution for your Sonos Connect - it behaves just like
@@ -175,8 +175,8 @@ while True:
                 yamaha_set_value('MAIN:PWR', 'On')
                 if YAMAHA_VOLUME is not None:
                     yamaha_set_value('MAIN:VOL', float(YAMAHA_VOLUME))
-                if YAMAHA_SOUNDPRG is not None:
-                    yamaha_set_value('MAIN:SOUNDPRG', YAMAHA_SOUNDPRG)
+            if YAMAHA_SOUNDPRG is not None:
+                yamaha_set_value('MAIN:SOUNDPRG', YAMAHA_SOUNDPRG)
             yamaha_set_value('MAIN:INP', YAMAHA_INPUT)
 
         last_status = status
